@@ -12,9 +12,12 @@ class PocketBot {
    void begin(Stream * stream);
    bool read();
    JsonObject &getJson();
+   void printRawTo(Stream &stream);
    
   private:
    Stream *mStream;
    bool mBegin;
    String mResponse;
+   int mBracketOpenCount;
+   int mBracketCloseCount;
 };
