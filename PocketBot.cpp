@@ -31,7 +31,7 @@ bool PocketBot::read(){
 }
 
 JsonObject& PocketBot::getJson(){
-  StaticJsonBuffer<2000> jsonBuffer;
+  StaticJsonBuffer<1000> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(mResponse);
   if(root.success()){
     

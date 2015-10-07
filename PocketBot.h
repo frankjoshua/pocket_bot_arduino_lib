@@ -6,6 +6,12 @@
 #include <Stream.h>
 #include <ArduinoJson.h>
 
+/** Command Contract */
+#define FACE_X face_x
+#define FACE_Y face_y
+#define FACE_Z face_z
+#define HEADING heading
+
 class PocketBot {
   
  public:
