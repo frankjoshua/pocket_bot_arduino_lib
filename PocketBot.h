@@ -16,7 +16,9 @@ class PocketBot {
   
  public:
    void begin(Stream * stream);
+   void begin();
    bool read();
+   bool read(char input);
    JsonObject &getJson();
    void printRawTo(Stream &stream);
    

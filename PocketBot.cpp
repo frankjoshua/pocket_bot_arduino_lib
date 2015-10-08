@@ -1,7 +1,11 @@
 #include "PocketBot.h"
 
 void PocketBot::begin(Stream *stream){
+  begin();
   mStream = stream;
+}
+
+void PocketBot::begin(){
   mBracketOpenCount = 0;
 }
 
@@ -9,6 +13,15 @@ bool PocketBot::read(){
   
   while ( mStream->available() ){
     char in = mStream->read();
+    if(read(in)){
+		return true;
+	}
+  }
+  return false; 
+}
+
+bool PocketBot::read(char in){
+  
     if (in == '{') {
 		if(mBracketOpenCount == 0){
 			mBegin = true;
@@ -26,12 +39,12 @@ bool PocketBot::read(){
 			return true;
 		}
     }
-  }
+ 
   return false; 
 }
 
 JsonObject& PocketBot::getJson(){
-  StaticJsonBuffer<1000> jsonBuffer;
+  StaticJsonBuffer<500> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(mResponse);
   if(root.success()){
     
