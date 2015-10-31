@@ -1,94 +1,46 @@
-#include <Arduino.h>
-#include <ArduinoJson.h>
 #include <Usb.h> //https://github.com/felis/USB_Host_Shield
-#include <AndroidAccessory.h>
-#include <MemoryFree.h>
+#include <AndroidAccessory.h> //https://github.com/bblanchon/ArduinoJson
 #include <PocketBot.h>
 
-AndroidAccessory acc("Google, Inc.",
-		     "DemoKit",
-		     "DemoKit Arduino Board",
+/*
+* These parameters must match what the app expects
+*/
+AndroidAccessory acc("Tesseract Mobile LLC",
+		     "PocketBot",
+		     "",
 		     "1.0",
-		     "http://www.android.com",
-		     "0000000012345678");
+		     "http://pocketbot.io",
+		     "1");
 
+/** This will be used to decode messages from the Android device */
 PocketBot pocketBot;
-
-long mLastTime = 0;
-long mLastLocalTime = 0;
+/* Allocate space for the decoded message. */
+PocketBotMessage message = PocketBotMessage_init_zero;
 
 void setup(void){
   Serial.begin(115200);
-
-  pinMode(10, OUTPUT);
-  digitalWrite(10, LOW);
   
   acc.powerOn();
-  pocketBot.begin();
 }
 
+byte in[1];
 void loop(void){
 
-  
-//  if (Serial.available())
-//  {
-//    n = Serial.readBytes(inputs, BUFSIZE);
-//    inputs[n] = 0;
-//    // Send characters to Bluefruit
-//    Serial.print("Sending: ");
-//    Serial.print(inputs);
-//
-//    // Send input data to host via Bluefruit
-//    ble.print(inputs);
-//  }
-
-  if(acc.isConnected()){
-    byte in[1];
+  if(acc.isConnected()){ 
     while(acc.read(in, sizeof(in), 1) > 0){
-      char input = (char) in[0];
-      Serial.print(input);
-      if(pocketBot.read(input)){
-        JsonObject& root = pocketBot.getJson();
-        if(!root.success()){
-         Serial.println("*************** JSON ERROR **************"); 
-         return;
-        }
-        
-        Serial.println("JSON");
-        root.printTo(Serial);
-        Serial.println("");
-        
-        for (JsonObject::iterator it=root.begin(); it!=root.end(); ++it){
-          Serial.print(it->key);
-          Serial.print(" = ");
-          Serial.println(it->value.asString());
-        }
-        
-        long tMills = root["time"];
-        Serial.print(tMills);
-        Serial.print("-");
-        Serial.print(mLastTime);
-        long mills = millis();
-        int timeDiff = tMills - mLastTime;
-        int localTimeDiff = mills - mLastLocalTime;
-        mLastTime = tMills;
-        mLastLocalTime = mills;
-        Serial.print("Tansmision time = ");
-        Serial.println(timeDiff);
-        Serial.print("Local time = ");
-        Serial.println(localTimeDiff);
-        int lag = localTimeDiff - timeDiff;
-        Serial.print("lag = ");
-        Serial.println(lag);
+      if(pocketBot.read(in[0], message)){
+        Serial.println(millis());
+        Serial.print(F("FaceID = ")); Serial.println(message.face.faceId);
+        Serial.print(F("FaceX = ")); Serial.println(message.face.faceX);
+        Serial.print(F("FaceY = ")); Serial.println(message.face.faceY);
+        Serial.print(F("FaceZ = ")); Serial.println(message.face.faceZ);
+        Serial.print(F("JoyX = ")); Serial.println(message.control.joyX);
+        Serial.print(F("JoyY = ")); Serial.println(message.control.joyY);
+        Serial.print(F("JoyZ = ")); Serial.println(message.control.joyZ);
+        Serial.print(F("Proximity = ")); Serial.println(message.sensor.proximity);
+        Serial.print(F("Heading = ")); Serial.println(message.sensor.heading);
       }
     }
   }
-  
-  //Debuging
-//  Serial.print(millis());
-//  Serial.print(" ");
-//  Serial.print("freeMemory()=");
-//  Serial.println(freeMemory());
-  //pocketBot.printRawTo(Serial);
-
 }
+

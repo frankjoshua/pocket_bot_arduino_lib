@@ -1,54 +1,42 @@
 #include "PocketBot.h"
 
-void PocketBot::begin(Stream *stream){
-  begin();
-  mStream = stream;
-}
-
-void PocketBot::begin(){
-  mBracketOpenCount = 0;
-}
-
-bool PocketBot::read(){
+bool PocketBot::read(Stream& stream, PocketBotMessage& pbMessage){
   
-  while ( mStream->available() ){
-    char in = mStream->read();
-    if(read(in)){
+  while ( stream.available() ){
+    byte in = stream.read();
+    if(read(in, pbMessage)){
 		return true;
 	}
   }
   return false; 
 }
 
-bool PocketBot::read(char in){
+bool PocketBot::read(byte& in, PocketBotMessage& pbMessage){
   
-    if (in == '{') {
-		if(mBracketOpenCount == 0){
-			mBegin = true;
-			mResponse = "";
-		}
-	   mBracketOpenCount++;
-    }
-    
-    if (mBegin) mResponse += (in);
-
-    if (in == '}') {
-		mBracketOpenCount--;
-		if(mBracketOpenCount == 0){
-			mBegin = false;
-			return true;
-		}
-    }
+	//Check for start byte
+    if(in == START_BYTE){
+	  if(messageStarted == false){
+		messageStarted = true;  
+		//Reset the position pointer
+	    pos = 0;
+	  } else {
+		messageStarted = false;
+		//Decode Message
+		return decodeBytes(pbMessage);
+	  }
+	} else {
+	  //Read in the data
+	  msg[pos] = in;
+	  pos++;
+	}
  
   return false; 
 }
 
-JsonObject& PocketBot::getJson(){
-  StaticJsonBuffer<250> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(mResponse);
-  return root;
-}
-
-void PocketBot::printRawTo(Stream &stream){
-	stream.print(mResponse);
+bool PocketBot::decodeBytes(PocketBotMessage& pbMessage){
+    /* Create a stream that reads from the buffer. */
+    pb_istream_t stream = pb_istream_from_buffer(msg, sizeof(msg));
+    
+    /* Decode the message. Return true if no problems */
+    return pb_decode(&stream, PocketBotMessage_fields, &pbMessage);
 }

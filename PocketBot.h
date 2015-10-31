@@ -1,31 +1,27 @@
-/**
-* Notes
-*/
 
 #include <Arduino.h>
 #include <Stream.h>
-#include <ArduinoJson.h>
+#include "PocketBotProtocol.pb.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
 
+/** Start of message from AndroidAccessory */
+#define START_BYTE 255
 /** Command Contract */
-#define FACE_X face_x
-#define FACE_Y face_y
-#define FACE_Z face_z
-#define HEADING heading
+#define NO_FACE -1
 
 class PocketBot {
   
  public:
-   void begin(Stream * stream);
-   void begin();
-   bool read();
-   bool read(char input);
-   JsonObject &getJson();
-   void printRawTo(Stream &stream);
+   bool read(Stream &stream, PocketBotMessage& pbMessage);
+   bool read(byte& input, PocketBotMessage& pbMessage);
    
   private:
-   Stream *mStream;
-   bool mBegin;
-   String mResponse;
-   int mBracketOpenCount;
-   int mBracketCloseCount;
+   bool messageStarted = false;
+   byte bytesLeft = 0;
+   byte msg[PocketBotMessage_size];
+   byte pos = 0;
+   bool decodeBytes(PocketBotMessage& pbMessage);
+   
 };
+
