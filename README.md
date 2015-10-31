@@ -1,13 +1,10 @@
 # PocketBot
 Arduino interface for Android PocketBot app
 
-Requires ArduinoJson library https://github.com/frankjoshua/ArduinoJson
-
 Example:
 
 ```
 #include <PocketBot.h>
-#include <ArduinoJson.h>
 
 PocketBot pocketBot;
 PocketBotMessage message = PocketBotMessage_init_zero;
