@@ -10,23 +10,24 @@ Example:
 #include <ArduinoJson.h>
 
 PocketBot pocketBot;
+PocketBotMessage message = PocketBotMessage_init_zero;
 
 setup(){
-  
   Serial.begin(115200);
-  
-  pocketBot.begin(&Serial);
-  
 }
 
 loop(){
 
-  if(pocketBot.read()){
-    JsonObject& root = pocketBot.getJson();
-    const char* sensor = root["sensor"];
-    long time          = root["time"];
-    double latitude    = root["data"][0];
-    double longitude   = root["data"][1];
+  if(pocketBot.read(Serial, message)){
+        Serial.print(F("FaceID = ")); Serial.println(message.face.faceId);
+        Serial.print(F("FaceX = ")); Serial.println(message.face.faceX);
+        Serial.print(F("FaceY = ")); Serial.println(message.face.faceY);
+        Serial.print(F("FaceZ = ")); Serial.println(message.face.faceZ);
+        Serial.print(F("JoyX = ")); Serial.println(message.control.joyX);
+        Serial.print(F("JoyY = ")); Serial.println(message.control.joyY);
+        Serial.print(F("JoyZ = ")); Serial.println(message.control.joyZ);
+        Serial.print(F("Proximity = ")); Serial.println(message.sensor.proximity);
+        Serial.print(F("Heading = ")); Serial.println(message.sensor.heading);
   }
 
 }
