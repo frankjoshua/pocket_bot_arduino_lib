@@ -60,6 +60,7 @@ void setup(void){
   Serial.println(F("Waiting for Android device..."));
   while(adk.isReady() == false){
      Usb.Task();
+     delay(5);
   }
   Serial.println("");
   Serial.println("Connected");
@@ -79,43 +80,7 @@ void loop(void){
     while(!rcode && len > 0){
       Usb.Task();
       if(pocketBot.read(msg[0], message)){
-     
-        mProximityAlert = message.sensor.proximity;
-        int faceId = message.face.faceId;
-        if(faceId > 0){
-          mRoamingMode = false;
-          //Get face location
-          float x = message.face.faceX;
-          float z = message.face.faceZ;
-          //Navigate towards face
-          if(x > 1.1){
-            int s = mapfloat(x, 1, 2, 30, 70);
-            Serial.println(s);
-            rightMotor->run(FORWARD);
-            rightMotor->setSpeed(s);
-            leftMotor->run(BACKWARD);
-            leftMotor->setSpeed(s);
-          } else if(x < .9){
-            int s = mapfloat(x, 0.0, 1, 70, 30);
-            Serial.println(s);
-            rightMotor->run(BACKWARD);
-            rightMotor->setSpeed(s);
-            leftMotor->run(FORWARD);
-            leftMotor->setSpeed(s);
-          } 
-          else if (z > .3 && z < .45){
-            move(BACKWARD, 100);
-          } else if ( z > .5) {
-            move(FORWARD, 100);
-          }
-          else {
-            rightMotor->setSpeed(0);
-            leftMotor->setSpeed(0);
-          }
-        } else {
-          mRoamingMode = true;
-        }
-        mLastUpdate = millis();
+        navigate();
       }
       rcode = adk.RcvData(&len, msg);
     }
@@ -156,12 +121,69 @@ void loop(void){
     }
   } 
   
-  if(millis() - mLastUpdate > 400){
+  if(millis() - mLastUpdate > 5000){
      mLastUpdate = millis();
      mRoamingMode = true;
   }
   
   
+}
+
+void navigate(){
+     mProximityAlert = message.sensor.proximity;
+    int faceId = message.face.faceId;
+    if(message.control.joyX != 0 || message.control.joyY !=0){
+       //Under Remote control
+       mRoamingMode = false;
+      int rSpeed = mapfloat(message.control.joyY, -1, 1, -255, 255);
+      int rDir = mapfloat(message.control.joyX, -1, 1, -255, 255);
+      int powerL = constrain(rSpeed + rDir, -255, 255);
+      int powerR = constrain(rSpeed - rDir, -255, 255);
+      if(powerL < 0){
+        leftMotor->run(FORWARD);
+      } else {
+        leftMotor->run(BACKWARD);
+      }
+      if(powerR < 0){
+        rightMotor->run(FORWARD);
+      } else {
+        rightMotor->run(BACKWARD);
+      }
+      rightMotor->setSpeed(abs(powerL));
+      leftMotor->setSpeed(abs(powerR));
+    } else if(faceId > 0){
+      mRoamingMode = false;
+      //Get face location
+      float x = message.face.faceX;
+      float z = message.face.faceZ;
+      //Navigate towards face
+      if(x > 1.1){
+        int s = mapfloat(x, 1, 2, 30, 70);
+        Serial.println(s);
+        rightMotor->run(FORWARD);
+        rightMotor->setSpeed(s);
+        leftMotor->run(BACKWARD);
+        leftMotor->setSpeed(s);
+      } else if(x < .9){
+        int s = mapfloat(x, 0.0, 1, 70, 30);
+        Serial.println(s);
+        rightMotor->run(BACKWARD);
+        rightMotor->setSpeed(s);
+        leftMotor->run(FORWARD);
+        leftMotor->setSpeed(s);
+      } 
+      else if (z > .3 && z < .45){
+        move(BACKWARD, 100);
+      } else if ( z > .5) {
+        move(FORWARD, 100);
+      }
+      else {
+        rightMotor->setSpeed(0);
+        leftMotor->setSpeed(0);
+      }
+    }
+    mLastUpdate = millis();
+       
 }
 
 void move(int dir, int speed){
