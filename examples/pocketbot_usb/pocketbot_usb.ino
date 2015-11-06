@@ -3,6 +3,10 @@
 #include <SPI.h>
 #include <PocketBot.h> //https://github.com/frankjoshua/PocketBot
 
+/*******************************************/
+/* Pins 9-13 are used for most USB shields */
+/*******************************************/
+
 //Init USB connection for android device
 USB Usb;
 //These two lines give support for using a powered USB hub
