@@ -6,6 +6,10 @@
 #include <Adafruit_MotorShield.h>
 #include <RunningMedian.h>
 
+/********************************************/
+/* Note: BACKWARD and FORWARD are reversed! */
+/********************************************/
+
 //Init USB connection for android device
 USB Usb;
 //These two lines give support for using a powered USB hub
@@ -136,7 +140,7 @@ void navigate(){
        //Under Remote control
        mRoamingMode = false;
       int rSpeed = mapfloat(message.control.joyY, -1, 1, -255, 255);
-      int rDir = mapfloat(message.control.joyX, -1, 1, -255, 255);
+      int rDir = mapfloat(message.control.joyX, -1, 1, -50, 50);
       int powerL = constrain(rSpeed + rDir, -255, 255);
       int powerR = constrain(rSpeed - rDir, -255, 255);
       if(powerL < 0){
@@ -181,6 +185,10 @@ void navigate(){
         rightMotor->setSpeed(0);
         leftMotor->setSpeed(0);
       }
+    } else {
+       //Stop
+       rightMotor->setSpeed(0);
+       leftMotor->setSpeed(0);
     }
     mLastUpdate = millis();
        
