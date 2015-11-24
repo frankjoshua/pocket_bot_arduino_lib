@@ -3,10 +3,6 @@
 #include <SPI.h>
 #include <PocketBot.h> //https://github.com/frankjoshua/PocketBot
 
-/*******************************************/
-/* Pins 9-13 are used for most USB shields */
-/*******************************************/
-
 //Init USB connection for android device
 USB Usb;
 //These two lines give support for using a powered USB hub
@@ -37,8 +33,15 @@ void setup(void){
     while(1); //halt
   }
   Serial.println(F("Waiting for Android device..."));
+  int count = 0;
   while(adk.isReady() == false){
      Usb.Task();
+     delay(5);
+     count++;
+     if(count == 100){
+        Serial.println("Waiting...");
+       count = 0; 
+     }
   }
   Serial.println("");
   Serial.println(F("Connected"));

@@ -1,11 +1,3 @@
-# PocketBot
-http://pocketbot.io
-
-Arduino interface for Android PocketBot app
-
-Example:
-
-```
 #include <PocketBot.h> //https://github.com/frankjoshua/PocketBot
 
 /** This will be used to decode messages from the Android device */
@@ -32,4 +24,3 @@ void loop(void){
   }
     
 }
-```

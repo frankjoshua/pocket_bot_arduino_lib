@@ -30,8 +30,8 @@ PocketBotMessage message = PocketBotMessage_init_zero;
 #define  SERVO2         7
 #define  PAN            0
 #define  TILT           1
-#define  SERVO_MAX      180
-#define  SERVO_MIN      135
+#define  SERVO_MAX      190
+#define  SERVO_MIN      125
 Servo servos[2];
 int servoPos[2];
 int servoDest[2];
@@ -77,16 +77,18 @@ void loop(void){
         Serial.print(F("JoyZ = ")); Serial.println(message.control.joyZ);
         Serial.print(F("Proximity = ")); Serial.println(message.sensor.proximity);
         Serial.print(F("Heading = ")); Serial.println(message.sensor.heading);
-        //Track face with servos
-        if(message.face.faceX > 1.1){
-          servoDest[PAN]++;
-        } else if(message.face.faceX < .9){
-          servoDest[PAN]--;
-        }
-        if(message.face.faceY > 1.1){
-          servoDest[TILT]--;
-        } else if(message.face.faceY < .9){
-          servoDest[TILT]++;
+        if(millis() % 2 == 0){
+          //Track face with servos
+          if(message.face.faceX > 1.1){
+            servoDest[PAN]++;
+          } else if(message.face.faceX < .9){
+            servoDest[PAN]--;
+          }
+          if(message.face.faceY > .85){
+            servoDest[TILT]--;
+          } else if(message.face.faceY < .65){
+            servoDest[TILT]++;
+          }
         }
         //servoTask();
       }
@@ -162,6 +164,11 @@ void setServo(int servo, int pos){
 
 void testServoRange(int servo){
   int center = SERVO_MIN + (SERVO_MAX - SERVO_MIN) / 2;
+  for(int l = center; l >= SERVO_MIN; l--){
+    setServo(servo, l);
+    delay(25);
+    Serial.println(l);
+  }
   for(int i = SERVO_MIN; i <= SERVO_MAX; i++){
     setServo(servo, i);
     delay(25);
