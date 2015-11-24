@@ -3,7 +3,9 @@ http://pocketbot.io
 
 Arduino interface for Android PocketBot app
 
-Example:
+This is an arduino library that is meant to be used to receive messages from the PocketBot Android app.
+
+Quick Start Example:
 
 ```
 #include <PocketBot.h> //https://github.com/frankjoshua/PocketBot
