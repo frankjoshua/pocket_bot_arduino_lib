@@ -7,6 +7,8 @@ This is an arduino library that is meant to be used to receive messages from the
 
 Quick Start Example:
 
+This example shows how to use a USB OTG cable to connect directly to an Arduino Uno.
+
 ```
 #include <PocketBot.h> //https://github.com/frankjoshua/PocketBot
 
