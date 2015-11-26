@@ -3,7 +3,13 @@ http://pocketbot.io
 
 Arduino interface for Android PocketBot app
 
-Example:
+This is an arduino library that is meant to be used to receive messages from the PocketBot Android app.
+
+Quick Start Example:
+
+This example shows how to use a USB OTG cable to connect directly to an Arduino Uno. If everything is working correctly PocketBot should launch when the Arduino is plugged in.
+
+![alt tag](http://pocketbot.io/wp-content/uploads/2015/11/pocketbot_otg.jpg)
 
 ```
 #include <PocketBot.h> //https://github.com/frankjoshua/PocketBot
