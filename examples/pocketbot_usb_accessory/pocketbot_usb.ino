@@ -1,3 +1,7 @@
+/*
+* DEPRCATED
+* This is an example of connecting to PocketBot using a USB host shield
+*/
 #include <adk.h> //https://github.com/felis/USB_Host_Shield_2.0
 #include <usbhub.h> //https://github.com/felis/USB_Host_Shield_2.0
 #include <SPI.h>
