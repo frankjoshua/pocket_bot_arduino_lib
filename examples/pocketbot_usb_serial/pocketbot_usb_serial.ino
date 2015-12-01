@@ -3,7 +3,7 @@
 * to an Arduino using USB Serial via an OTG Cable
 * Tested with Adruino IDE 1.6.4
 * http://pocketbot.io
-/*
+*/
 #include <PocketBot.h> // https://github.com/frankjoshua/PocketBot
 
 /** This will be used to decode messages from the Android device */
