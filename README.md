@@ -43,7 +43,7 @@ void loop(void){
 Example: to get the current compass heading in degrees  
 int heading = message.Sensor.heading;
 
-Here is the Protobuf p.proto file
+Here is the Protobuf .proto file
 ```
 message PocketBotMessage {
   required Face face = 1;
