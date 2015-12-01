@@ -1,4 +1,4 @@
-# PocketBot
+#PocketBot
 http://pocketbot.io
 
 Arduino interface for Android PocketBot app
@@ -39,3 +39,43 @@ void loop(void){
     
 }
 ```
+####Protobuf Format
+Example: to get the current compass heading in degrees  
+int heading = message.Sensor.heading;
+
+Here is the Protobuf p.proto file
+```
+message PocketBotMessage {
+  required Face face = 1;
+  required Control control = 2;
+  required Gps gps = 3;
+  required Sensor sensor = 4;
+}
+
+message Face {
+  required sint32 faceId = 1;
+  required float faceX = 2;
+  required float faceY = 3;
+  required float faceZ = 4;
+}
+
+message Control {
+  required float joyX = 1;
+  required float joyY = 2;
+  required float joyZ = 3;
+  required bool buttonA = 4;
+  required bool buttonB = 5;
+  required int32 destHeading = 6;
+}
+
+message Gps {
+  required float lat = 1;
+  required float lon = 2;
+}
+
+message Sensor {
+	required bool proximity = 1;
+	required int32 heading = 2;
+}
+```
+
