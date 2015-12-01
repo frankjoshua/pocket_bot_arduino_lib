@@ -12,6 +12,12 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *leftMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *rightMotor = AFMS.getMotor(4);
 
+/* 1 to 255 Lower this number to slow down the robot */
+const int maxSpeed = 255;
+/* 1 to 255 Lower this number if the robot is turning too sharp */
+const int maxTurnSpeed = 255;
+
+    
 void setup() {
   //Start motor shield
   AFMS.begin();  // create with the default frequency 1.6KHz
@@ -25,27 +31,43 @@ void loop() {
     /* This code will only be called if a complete message is received*/
     //Translate the Joystick X, Y (-1.0 <-> 1.0) to motor controler (0 <-> 255, FORWARD, BACKWARD) 
     //Speed
-    int throttle = mapfloat(message.control.joyY, -1, 1, -255, 255);
+    int throttle = mapfloat(message.control.joyY, -1, 1, -maxSpeed, maxSpeed);
     //Direction
-    int dir = mapfloat(message.control.joyX, -1, 1, -50, 50);
+    int dir = mapfloat(message.control.joyX, -1, 1, -maxTurnSpeed, maxTurnSpeed);
     //Left and right power
-    int powerL = constrain(throttle + dir, -255, 255);
-    int powerR = constrain(throttle - dir, -255, 255);
-    //Set motors to FORWARD or BACKWARD
-    if(powerL < 0){
+    int powerL = 0;
+    int powerR = 0;
+    if(throttle < 0){
+      powerL = constrain(throttle + dir, -maxSpeed, maxSpeed);
+      powerR = constrain(throttle - dir, -maxSpeed, maxSpeed);
+    } else {
+      powerL = constrain(throttle + dir, -maxSpeed, maxSpeed);
+      powerR = constrain(throttle - dir, -maxSpeed, maxSpeed);
+    }
+    //Send power values to the motors
+    driveMotors(powerL, powerR);
+    
+  }
+}
+
+/*
+* Translates values of left and right power to what the motor driver understands
+*/
+void driveMotors(int leftPower, int rightPower){
+  //Set motors to FORWARD or BACKWARD
+    if(leftPower < 0){
       leftMotor->run(BACKWARD);
     } else {
       leftMotor->run(FORWARD);
     }
-    if(powerR < 0){
+    if(rightPower < 0){
       rightMotor->run(BACKWARD);
     } else {
       rightMotor->run(FORWARD);
     }
     //Set motor speeds
-    rightMotor->setSpeed(abs(powerL));
-    leftMotor->setSpeed(abs(powerR));
-  }
+    rightMotor->setSpeed(abs(leftPower));
+    leftMotor->setSpeed(abs(rightPower));
 }
 
 /*
