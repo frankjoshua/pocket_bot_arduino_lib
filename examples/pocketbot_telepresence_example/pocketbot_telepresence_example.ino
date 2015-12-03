@@ -13,11 +13,16 @@ Adafruit_DCMotor *leftMotor = AFMS.getMotor(3);
 Adafruit_DCMotor *rightMotor = AFMS.getMotor(4);
 
 /* 1 to 255 Lower this number to slow down the robot */
-const int maxSpeed = 255;
+const int maxSpeed = 125;
 /* 1 to 255 Lower this number if the robot is turning too sharp */
-const int maxTurnSpeed = 255;
+const int maxTurnSpeed = maxSpeed / 2;
 
-    
+//Track time between messages
+long mLastCommTime = 0;
+
+int leftPower = 0;
+int rightPower = 0;
+
 void setup() {
   //Start motor shield
   AFMS.begin();  // create with the default frequency 1.6KHz
@@ -29,6 +34,7 @@ void loop() {
   //Check for PocketBot message
   if(pocketBot.read(Serial, message)){
     /* This code will only be called if a complete message is received*/
+    mLastCommTime = millis();
     //Translate the Joystick X, Y (-1.0 <-> 1.0) to motor controler (0 <-> 255, FORWARD, BACKWARD) 
     //Speed
     int throttle = mapfloat(message.control.joyY, -1, 1, -maxSpeed, maxSpeed);
@@ -37,23 +43,40 @@ void loop() {
     //Left and right power
     int powerL = 0;
     int powerR = 0;
-    if(throttle < 0){
-      powerL = constrain(throttle + dir, -maxSpeed, maxSpeed);
-      powerR = constrain(throttle - dir, -maxSpeed, maxSpeed);
-    } else {
-      powerL = constrain(throttle + dir, -maxSpeed, maxSpeed);
-      powerR = constrain(throttle - dir, -maxSpeed, maxSpeed);
-    }
+    powerL = constrain(throttle + dir, -maxSpeed, maxSpeed);
+    powerR = constrain(throttle - dir, -maxSpeed, maxSpeed);
     //Send power values to the motors
-    driveMotors(powerL, powerR);
-    
+    leftPower = powerL;
+    rightPower = powerR; 
   }
+  
+  //If too much time has passed kill the motors
+  if(millis() - mLastCommTime > 200){
+    mLastCommTime += 10;
+    //Drop power by 5%
+    leftPower = leftPower * .98;
+    rightPower = rightPower *.98; 
+  }
+  
+  driveMotors(leftPower, rightPower);
 }
 
 /*
 * Translates values of left and right power to what the motor driver understands
+* TODO: Change the motor speed slowly to avoid jerking the robot
 */
+int mLastLeft = 0;
+int mLastRight = 0;
 void driveMotors(int leftPower, int rightPower){
+  //If no change just return
+  if(mLastLeft == leftPower && mLastRight == rightPower){
+     return;
+  }
+  
+  //Save the last values
+  mLastLeft = leftPower;
+  mLastRight = rightPower;
+  
   //Set motors to FORWARD or BACKWARD
     if(leftPower < 0){
       leftMotor->run(BACKWARD);
