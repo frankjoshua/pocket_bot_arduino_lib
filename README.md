@@ -41,7 +41,7 @@ void loop(void){
 ```
 ####Protobuf Format
 Example: to get the current compass heading in degrees  
-int heading = message.Sensor.heading;
+int heading = message.sensor.heading;
 
 Here is the Protobuf .proto file
 ```
