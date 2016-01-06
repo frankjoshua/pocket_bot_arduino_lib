@@ -35,13 +35,13 @@ void loop(void){
 
   if(pocketBot.read(ble, message)){
         Serial.println(millis());
-        Serial.print(F("FaceID = ")); Serial.println(message.face.faceId);
-        Serial.print(F("FaceX = ")); Serial.println(message.face.faceX);
-        Serial.print(F("FaceY = ")); Serial.println(message.face.faceY);
-        Serial.print(F("FaceZ = ")); Serial.println(message.face.faceZ);
-        Serial.print(F("JoyX = ")); Serial.println(message.control.joyX);
-        Serial.print(F("JoyY = ")); Serial.println(message.control.joyY);
-        Serial.print(F("JoyZ = ")); Serial.println(message.control.joyZ);
+        Serial.print(F("FaceID = ")); Serial.println(message.face.id);
+        Serial.print(F("FaceX = ")); Serial.println(message.face.X);
+        Serial.print(F("FaceY = ")); Serial.println(message.face.Y);
+        Serial.print(F("FaceZ = ")); Serial.println(message.face.Z);
+        Serial.print(F("JoyX = ")); Serial.println(message.control.joy1.X);
+        Serial.print(F("JoyY = ")); Serial.println(message.control.joy1.Y);
+        Serial.print(F("JoyZ = ")); Serial.println(message.control.joy1.Z);
         Serial.print(F("Proximity = ")); Serial.println(message.sensor.proximity);
         Serial.print(F("Heading = ")); Serial.println(message.sensor.heading);
    }

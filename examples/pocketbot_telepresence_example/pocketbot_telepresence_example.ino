@@ -37,9 +37,9 @@ void loop() {
     mLastCommTime = millis();
     //Translate the Joystick X, Y (-1.0 <-> 1.0) to motor controler (0 <-> 255, FORWARD, BACKWARD) 
     //Speed
-    int throttle = mapfloat(message.control.joyY, -1, 1, -maxSpeed, maxSpeed);
+    int throttle = mapfloat(message.control.joy1.Y, -1, 1, -maxSpeed, maxSpeed);
     //Direction
-    int dir = mapfloat(message.control.joyX, -1, 1, -maxTurnSpeed, maxTurnSpeed);
+    int dir = mapfloat(message.control.joy1.X, -1, 1, -maxTurnSpeed, maxTurnSpeed);
     //Left and right power
     int powerL = 0;
     int powerR = 0;

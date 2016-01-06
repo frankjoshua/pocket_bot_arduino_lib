@@ -68,25 +68,25 @@ void loop(void){
       Usb.Task();
       if(pocketBot.read(msg[0], message)){
         Serial.println(millis());
-        Serial.print(F("FaceID = ")); Serial.println(message.face.faceId);
-        Serial.print(F("FaceX = ")); Serial.println(message.face.faceX);
-        Serial.print(F("FaceY = ")); Serial.println(message.face.faceY);
-        Serial.print(F("FaceZ = ")); Serial.println(message.face.faceZ);
-        Serial.print(F("JoyX = ")); Serial.println(message.control.joyX);
-        Serial.print(F("JoyY = ")); Serial.println(message.control.joyY);
-        Serial.print(F("JoyZ = ")); Serial.println(message.control.joyZ);
+        Serial.print(F("FaceID = ")); Serial.println(message.face.id);
+        Serial.print(F("FaceX = ")); Serial.println(message.face.X);
+        Serial.print(F("FaceY = ")); Serial.println(message.face.Y);
+        Serial.print(F("FaceZ = ")); Serial.println(message.face.Z);
+        Serial.print(F("JoyX = ")); Serial.println(message.control.joy1.X);
+        Serial.print(F("JoyY = ")); Serial.println(message.control.joy1.Y);
+        Serial.print(F("JoyZ = ")); Serial.println(message.control.joy1.Z);
         Serial.print(F("Proximity = ")); Serial.println(message.sensor.proximity);
         Serial.print(F("Heading = ")); Serial.println(message.sensor.heading);
         if(millis() % 2 == 0){
           //Track face with servos
-          if(message.face.faceX > 1.1){
+          if(message.face.X > 1.1){
             servoDest[PAN]++;
-          } else if(message.face.faceX < .9){
+          } else if(message.face.X < .9){
             servoDest[PAN]--;
           }
-          if(message.face.faceY > .85){
+          if(message.face.Y > .85){
             servoDest[TILT]--;
-          } else if(message.face.faceY < .65){
+          } else if(message.face.Y < .65){
             servoDest[TILT]++;
           }
         }

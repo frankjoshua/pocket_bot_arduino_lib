@@ -20,7 +20,7 @@ void setup(void){
 void loop(void){
   
   if(pocketBot.read(Serial, message)){
-   if(message.face.faceId != -1){
+   if(message.face.id != -1){
      //Turn on led is a face is seen
      digitalWrite(13, HIGH);
    } else {
