@@ -1,16 +1,37 @@
 #include <PocketBot.h> // https://github.com/frankjoshua/PocketBot
 #include <Wire.h>
-#include <Adafruit_MotorShield.h> // https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
 
 /* This will be used to decode messages from the Android device */
 PocketBot pocketBot;
 /* Allocate space for the decoded message. */
 PocketBotMessage message = PocketBotMessage_init_zero;
 
-// Create the motor shield object with the default I2C address
-Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-Adafruit_DCMotor *leftMotor = AFMS.getMotor(3);
-Adafruit_DCMotor *rightMotor = AFMS.getMotor(4);
+/* 
+* Motor Drivers
+* Set your motor driver to 1 to activate it, set any unused to 0
+*/
+#define ADAFRUIT 0
+#define SABERTOOTH 1
+/* End Motor drivers */
+
+#if ADAFRUIT
+  #include <Adafruit_MotorShield.h> // https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
+  // Create the motor shield object with the default I2C address
+  Adafruit_MotorShield AFMS = Adafruit_MotorShield();
+  Adafruit_DCMotor *leftMotor = AFMS.getMotor(3);
+  Adafruit_DCMotor *rightMotor = AFMS.getMotor(4);
+#endif
+
+#if SABERTOOTH
+  #include <SabertoothSimplified.h>
+  #include <SoftwareSerial.h>
+  //Can't use serial because PocketBot is using it
+  SoftwareSerial SWSerial(NOT_A_PIN, 12);
+  SabertoothSimplified ST(SWSerial); // Use SWSerial as the serial port.
+  #define LEFT 1
+  #define RIGHT 2
+#endif
+
 
 /* 1 to 255 Lower this number to slow down the robot */
 const int maxSpeed = 125;
@@ -25,7 +46,12 @@ int rightPower = 0;
 
 void setup() {
   //Start motor shield
-  AFMS.begin();  // create with the default frequency 1.6KHz
+  #if ADAFRUIT
+    AFMS.begin();  // create with the default frequency 1.6KHz
+  #endif
+  #if SABERTOOTH
+    SWSerial.begin(9600);
+  #endif
   //Talk to arduino through USB Serial at 115200 baud
   Serial.begin(115200);
 }
@@ -77,7 +103,8 @@ void driveMotors(int leftPower, int rightPower){
   mLastLeft = leftPower;
   mLastRight = rightPower;
   
-  //Set motors to FORWARD or BACKWARD
+  #if ADAFRUIT
+    //Set motors to FORWARD or BACKWARD
     if(leftPower < 0){
       leftMotor->run(BACKWARD);
     } else {
@@ -91,6 +118,11 @@ void driveMotors(int leftPower, int rightPower){
     //Set motor speeds
     rightMotor->setSpeed(abs(leftPower));
     leftMotor->setSpeed(abs(rightPower));
+  #endif
+  #if SABERTOOTH
+    ST.motor(RIGHT, rightPower);
+    ST.motor(LEFT, leftPower);
+  #endif
 }
 
 /*
