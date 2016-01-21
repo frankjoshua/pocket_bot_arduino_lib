@@ -28,15 +28,15 @@ PocketBotMessage message = PocketBotMessage_init_zero;
   //Can't use serial because PocketBot is using it
   SoftwareSerial SWSerial(NOT_A_PIN, 12);
   SabertoothSimplified ST(SWSerial); // Use SWSerial as the serial port.
-  #define LEFT 1
-  #define RIGHT 2
+  #define LEFT 2
+  #define RIGHT 1
 #endif
 
 
-/* 1 to 255 Lower this number to slow down the robot */
-const int maxSpeed = 125;
-/* 1 to 255 Lower this number if the robot is turning too sharp */
-const int maxTurnSpeed = maxSpeed / 2;
+/* 1 to 127 Lower this number to slow down the robot */
+const int maxSpeed = 127;
+/* 1 to 127 Lower this number if the robot is turning too sharp */
+const int maxTurnSpeed = 60;
 
 //Track time between messages
 long mLastCommTime = 0;
@@ -54,13 +54,23 @@ void setup() {
   #endif
   //Talk to arduino through USB Serial at 115200 baud
   Serial.begin(115200);
+  
+  pinMode(13, OUTPUT);
 }
 
+bool flip;
 void loop() {
   //Check for PocketBot message
   if(pocketBot.read(Serial, message)){
     /* This code will only be called if a complete message is received*/
     mLastCommTime = millis();
+    //Toggle LED 13
+    flip = !flip;
+    if(flip){
+      digitalWrite(13, HIGH);
+    } else {
+      digitalWrite(13, LOW);
+    }
     //Translate the Joystick X, Y (-1.0 <-> 1.0) to motor controler (0 <-> 255, FORWARD, BACKWARD) 
     //Speed
     int throttle = mapfloat(message.control.joy1.Y, -1, 1, -maxSpeed, maxSpeed);
@@ -79,9 +89,9 @@ void loop() {
   //If too much time has passed kill the motors
   if(millis() - mLastCommTime > 200){
     mLastCommTime += 10;
-    //Drop power by 5%
-    leftPower = leftPower * .98;
-    rightPower = rightPower *.98; 
+    //Drop power by 1%
+    leftPower = leftPower * .99;
+    rightPower = rightPower * .99; 
   }
   
   driveMotors(leftPower, rightPower);
@@ -99,7 +109,7 @@ void driveMotors(int leftPower, int rightPower){
      return;
   }
   
-  //Save the last values
+  //Save the last input values
   mLastLeft = leftPower;
   mLastRight = rightPower;
   
@@ -115,9 +125,12 @@ void driveMotors(int leftPower, int rightPower){
     } else {
       rightMotor->run(FORWARD);
     }
+    //Adjust power from -127:127 to 1:255
+    leftPower = abs(leftPower) * 2 + 1;
+    rightPower = abs(rightPower) * 2 + 1;
     //Set motor speeds
-    rightMotor->setSpeed(abs(leftPower));
-    leftMotor->setSpeed(abs(rightPower));
+    rightMotor->setSpeed(rightPower);
+    leftMotor->setSpeed(leftPower);
   #endif
   #if SABERTOOTH
     ST.motor(RIGHT, rightPower);
