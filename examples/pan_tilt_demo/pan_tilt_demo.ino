@@ -19,7 +19,10 @@ PocketBotMessage message = PocketBotMessage_init_zero;
 #define  TILT           1
 #define  SERVO_MAX      190
 #define  SERVO_MIN      125
-#define  SPEED          4
+#define  SERVO_MAX_TILT 170
+#define  SERVO_MIN_TILT 145
+#define  SPEED          1
+
 Servo servos[2];
 int servoPos[2];
 int servoDest[2];
@@ -57,10 +60,10 @@ void servoTask(){
   } else if(servoDest[PAN] < SERVO_MIN){
       servoDest[PAN] = SERVO_MIN;
   }
-  if(servoDest[TILT] > SERVO_MAX){
-      servoDest[TILT] = SERVO_MAX;
-  } else if(servoDest[TILT] < SERVO_MIN){
-      servoDest[TILT] = SERVO_MIN;
+  if(servoDest[TILT] > SERVO_MAX_TILT){
+      servoDest[TILT] = SERVO_MAX_TILT;
+  } else if(servoDest[TILT] < SERVO_MIN_TILT){
+      servoDest[TILT] = SERVO_MIN_TILT;
   }
   //Update Servo positions
   if(servoDest[PAN] > servoPos[PAN]){
@@ -95,9 +98,7 @@ void initServos(){
   int center = SERVO_MIN + (SERVO_MAX - SERVO_MIN) / 2;
   setServo(PAN, center);
   setServo(TILT, center);
-  setServo(PAN, center);
   servoDest[PAN] = center;
-  setServo(TILT, center);
   servoDest[TILT] = center;
 }
 
