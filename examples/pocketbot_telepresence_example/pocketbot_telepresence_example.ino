@@ -24,9 +24,10 @@ PocketBotMessage message = PocketBotMessage_init_zero;
 
 #if SABERTOOTH
   #include <SabertoothSimplified.h>
-  #include <SoftwareSerial.h>
+  #include <AltSoftSerial.h>
   //Can't use serial because PocketBot is using it
-  SoftwareSerial SWSerial(NOT_A_PIN, 12);
+  //Unlike SoftSerial, AltSoftSerial doesn't interfere with Hardware Serial
+  AltSoftSerial SWSerial; //https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html
   SabertoothSimplified ST(SWSerial); // Use SWSerial as the serial port.
   #define LEFT 2
   #define RIGHT 1
