@@ -1,6 +1,8 @@
 #PocketBot
 http://pocketbot.io
 
+You can get the Android app at https://play.google.com/store/apps/details?id=com.tesseractmobile.pocketbot
+
 Arduino interface for Android PocketBot app
 
 This is an arduino library that is meant to be used to receive messages from the PocketBot Android app.
